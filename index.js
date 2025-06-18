@@ -2,11 +2,21 @@ import express from 'express';
 import nodemailer from 'nodemailer';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import https from 'https';
+import fs from 'fs';
+
 dotenv.config();
 const app = express();
 const PORT = 8000;
 app.use(cors());
 app.use(express.json());
+
+
+const options = {
+    key: fs.readFileSync('./private.key'),
+    cert: fs.readFileSync('./certificate.crt')
+};
+  
 
 app.get('/', (req, res) => {
     res.send('Backend is running');
@@ -61,4 +71,6 @@ app.post('/send-email', async (req, res) => {
 });
 
 
-app.listen(PORT, () => console.log("server is running on port " + PORT));
+https.createServer(options, app).listen(443, () => {
+    console.log('🚀 HTTPS Server is running on https://YOUR_SERVER_IP');
+});
