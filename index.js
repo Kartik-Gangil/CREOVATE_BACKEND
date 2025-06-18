@@ -4,19 +4,21 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import https from 'https';
 import fs from 'fs';
-
+import path from 'path';
+import { fileURLToPath } from 'url';
 dotenv.config();
 const app = express();
 const PORT = 8000;
 app.use(cors());
 app.use(express.json());
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const options = {
-    key: fs.readFileSync('./private.key'),
-    cert: fs.readFileSync('./certificate.crt')
+    key: fs.readFileSync(path.join(__dirname, 'private.key')),
+    cert: fs.readFileSync(path.join(__dirname, 'certificate.crt')),
 };
-  
 
 app.get('/', (req, res) => {
     res.send('Backend is running');
@@ -61,8 +63,8 @@ app.post('/send-email', async (req, res) => {
                 client message : ${message}
                 `
         };
-            await transporter.sendMail(Client_mail_Options);
-            await transporter.sendMail(Owner_mail_Options);
+        await transporter.sendMail(Client_mail_Options);
+        await transporter.sendMail(Owner_mail_Options);
         res.status(200).send('Email sent successfully');
     } catch (error) {
         console.error('Error sending email:', error);
